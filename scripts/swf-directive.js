@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 (function (angular, swfobject) {
-    angular.module('flm.directives', [ ])
+    angular.module('angular-swfobject', [ ])
         .directive('swfObject', function () {
             return {
                 restrict: 'AE',
@@ -17,9 +17,9 @@
                     height:         '@',
                     version:        '@',
                     expressInstall: '@',
-                    params:         '=',
-                    flashvars:      '=',
-                    attributes:     '=',
+                    params:         '@',
+                    flashvars:      '@',
+                    attributes:     '@',
                     callback:       '&'
                 },
                 link: function (scope, iElement, iAttrs) {
@@ -37,12 +37,6 @@
                     var attributes = {
                         align: 'left',
                         id: iElement[0].id
-                    };
-
-                    var fireEvent = function (type, data) {
-                        if (scope.callback && (typeof scope.callback === 'function')) {
-                            scope.callback({ type: type, data: data });
-                        }
                     };
 
                     var embedSwf = function () {
