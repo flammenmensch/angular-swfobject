@@ -68,6 +68,6 @@
                         embedSwf();
                     });
                 }
-            }
+            };
         });
 } (window.angular, window.swfobject));

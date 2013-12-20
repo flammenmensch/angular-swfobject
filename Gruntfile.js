@@ -7,8 +7,18 @@
  */
 module.exports = function (grunt) {
     grunt.initConfig({
-
+        clean: [ 'dist/' ],
+        uglify: {
+            'dist/swf-directive.min.js': [ 'scripts/swf-directive.js' ]
+        },
+        jshint: {
+            all: [ 'scripts/swf-directive.js' ]
+        }
     });
 
-    grunt.registerTask('build', [ ]);
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+
+    grunt.registerTask('build', [ 'jshint', 'clean', 'uglify' ]);
 };
