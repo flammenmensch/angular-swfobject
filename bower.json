@@ -1,0 +1,26 @@
+{
+  "name": "angular-swfobject",
+  "version": "0.1.0",
+  "authors": [
+    "Flammenmensch <maleventum@gmail.com>"
+  ],
+  "description": "AngularJS binding for SWFObject",
+  "keywords": [
+    "Megavisor",
+    "SWF",
+    "AngularJS"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.6",
+    "swfobject": "*"
+  }
+}

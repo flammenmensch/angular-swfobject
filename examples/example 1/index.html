@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MEGAVISOR.com SWF Wrapper test page</title>
+    <style>
+        div.block {
+            border: 1px #333 dashed;
+            padding: 20px;
+            width: 400px;
+            height: 300px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body ng-app="com.megavisor.app">
+    <h1>MEGAVISOR.com SWF Wrapper test page</h1>
+
+    <div ng-controller="AppCtrl">
+        <swf-object
+             id="flashContent"
+             class="block"
+             source="{{source}}"
+             params="params"
+             flashvars="flashvars"
+             callback="callback(event)">
+            <img src="assets/adobe-flash-logo-sm.jpeg" alt="Adobe Flash Player">
+            <p>Adobe&reg; Flash&trade; Player 11.9.0 or later is required</p>
+        </swf-object>
+    </div>
+    <script src="../../bower_components/swfobject/swfobject/swfobject.js"></script>
+    <script src="../../bower_components/angular/angular.js"></script>
+    <script src="../../scripts/swf-directive.js"></script>
+    <script>
+        (function (angular) {
+            angular.module('com.megavisor.app', [ 'com.megavisor.linker.flash' ])
+                    .controller('AppCtrl', [ '$scope', function ($scope) {
+                        $scope.source = './assets/Main.swf';
+                        $scope.flashvars = {
+                            uuid: 'f4d1e950-ea29-476b-84c4-606c2babdc5b',
+                            bridge: Date.now().toString() + Math.random().toString(),
+                            bridgeNamespace: 'MV.Linker.Bridge',
+                            callbackName: 'myCallbackFn'
+                        };
+                        $scope.params = {
+                            allowfullscreen: true,
+                            allowscriptaccess: 'always'
+                        };
+                        $scope.callback = function (event) {
+                            console.log('Received event', event);
+                        };
+                    } ])
+                    .run(function () {
+                        console.log('Application started');
+                    });
+        } (window.angular));
+    </script>
+</body>
+</html>
