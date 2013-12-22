@@ -8,8 +8,55 @@
 (function (angular, swfobject) {
     'use strict';
 
-    angular.module('angular-swfobject', [ ])
+    angular.module('angular-swfobject', [])
         .provider('swfService', function () {
+
+
+            var simpleObserver = function(obj){
+
+                var events = {};
+                obj.on = function(evt,cb){
+
+
+                    var callbacks = events[evt];
+                    if (!callbacks){
+                        callbacks = events[evt] = [];
+                    }
+
+                    if (callbacks.indexOf(cb)<0){
+                        callbacks.push(cb);
+                    }
+
+                    return obj;
+                };
+
+                obj.off = function(evt,cb){
+                    if (evt && events[evt]){
+
+
+                        if (cb){
+                            var ind = events[evt].indexOf(cb);
+                            if (ind >= 0){
+                                events[evt].splice(ind,1);
+                            }
+                        } else {
+                            events[evt] = [];
+                        }
+                    }
+                };
+
+                obj.fireEvt = function(evt, data){
+                    var callbacks = events[evt];
+                    if (!!callbacks){
+                        callbacks.forEach(function (cb) {
+                            cb(evt, data);
+                        })
+                    }
+                };
+
+                return obj;
+            };
+
             var configObject = {
                 url: '',
                 width: '100%',
@@ -109,8 +156,7 @@
                 return setOption.call(this, 'flashvars', value);
             };
 
-            this.$get = [ '$q', function ($q) {
-                var elementRef = null;
+            this.$get = [ '$q', function ($q){
 
                 var Service = function() { };
                 /**
@@ -121,19 +167,43 @@
                     return configObject;
                 };
                 /**
-                 * Getter for created <object /> element
-                 * @returns {null}
-                 */
-                Service.prototype.element = function () {
-                    return elementRef;
-                };
-                /**
                  * Embed swf
                  * @returns {promise}
                  */
-                Service.prototype.embedSwf = function () {
+                Service.prototype.embedSwf = function (Config){
+
+                    // готовим глобалскоп
+                    if (!window.swfService){ window.swfService = {}; }
+                    if (!window.swfService.bridges){ window.swfService.bridges = {}; }
+
                     var deferred = $q.defer();
-                    var c = configObject;
+                    var c = angular.copy(configObject);
+
+                    angular.extend(c,Config);
+
+                    var uuid = 'bridge' + Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1) + (new Date().getTime());
+
+                    var obj = simpleObserver({
+                        callFn:function(fnName,args){
+                            if(this.ref){
+                                this.ref['bridge_in'](fnName,args);
+                            }
+                        },
+                        release:function(){
+                            delete window.swfService.bridges[uuid];
+                            // и както удалить объект с id-ником
+                        }
+                    });
+
+                    var bridge = function(evt,data){
+                        obj.fireEvt(evt,data);
+                    };
+
+                    window.swfService.bridges[uuid] = bridge;
+
+                    c.flashvars.bridge_in  = 'bridge_in'; // функция для ввода в флеш
+                    c.flashvars.bridge_out = 'window.swfService.bridges.'+uuid; // функция для вывода в js
+
                     swfobject.embedSWF(
                         c.url,
                         c.elementId,
@@ -146,12 +216,13 @@
                         c.attributes,
                         function (event) {
                             if (!event.success) {
-                                return deferred.reject(event);
+                                deferred.reject(event);
+                            } else {
+                                obj.ref = event.ref;
+                                obj.id = event.id;
+
+                                deferred.resolve(obj);
                             }
-
-                            elementRef = event.ref;
-
-                            deferred.resolve(event);
                         }
                     );
 
@@ -161,4 +232,4 @@
                 return new Service();
             } ];
         });
-} (window.angular, window.swfobject));
+})(window.angular, window.swfobject);
