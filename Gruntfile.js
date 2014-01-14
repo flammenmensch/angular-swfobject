@@ -9,10 +9,10 @@ module.exports = function (grunt) {
     grunt.initConfig({
         clean: [ 'dist/' ],
         uglify: {
-            'dist/swf-directive.min.js': [ 'scripts/swf-directive.js' ]
+            'dist/angular-swfobject.min.js': [ 'scripts/swf-directive.js', 'scripts/swf-service.js', 'scripts/swf-service-decorator.js' ]
         },
         jshint: {
-            all: [ 'scripts/swf-directive.js' ]
+            all: [ 'scripts/swf-directive.js', 'scripts/swf-service.js', 'scripts/swf-service-decorator.js' ]
         }
     });
 

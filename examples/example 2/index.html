@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SWF Service test page</title>
+    <style>
+        div.block {
+            border: 1px #333 dashed;
+            padding: 20px;
+            width: 400px;
+            height: 300px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body ng-app="ExampleApp">
+    <h1>SWF Service test page</h1>
+
+    <div ng-controller="AppCtrl">
+        <div
+            id="flashContent"
+            class="block">
+            <img src="assets/adobe-flash-logo-sm.jpeg" alt="Adobe Flash Player">
+            <p>Adobe&reg; Flash&trade; Player is required</p>
+        </div>
+    </div>
+    <script src="../../bower_components/swfobject/swfobject/swfobject.js"></script>
+    <script src="../../bower_components/angular/angular.js"></script>
+    <script src="../../scripts/swf-service.js"></script>
+    <script src="../../scripts/swf-service-decorator.js"></script>
+    <script>
+        (function (angular) {
+            angular.module('ExampleApp', [ 'megavisor-swfservice' ])
+                    .config([ 'swfServiceProvider', function (swfServiceProvider) {
+                        swfServiceProvider
+                                .url('assets/Main.swf')
+                                .elementId('flashContent')
+                                .width('100%')
+                                .height('500px')
+                                .flashvars({ uuid: '82a7fcdd-d431-4905-a961-74032c76fa2c' })
+                                .params({ wmode: 'direct', allowscriptaccess: 'always' });
+                    } ])
+                    .controller('AppCtrl', [ 'swfService', '$scope', function (swfService, $scope) {
+                            var config = swfService.config();
+                            console.log(config);
+                            swfService
+                                .embedSwf()
+                                .then(function (event) {
+                                    console.log('Embedded');
+                                });
+                    } ])
+        } (window.angular));
+    </script>
+</body>
+</html>
